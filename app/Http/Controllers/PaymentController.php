@@ -16,7 +16,15 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+        $reference = Payment::generateReference(32);
+        $payments = Payment::all();
+        return view('payments.index', compact('reference', 'payments'));
+    }
+
+    public function getReference()
+    {
+        $reference = Payment::generateReference(32);
+        return response()->json($reference, 200);
     }
 
     /**

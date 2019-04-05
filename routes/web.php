@@ -12,9 +12,10 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/payments');
 });
 
+Route::get('payments/generate-reference', 'PaymentController@getReference');
 Route::resource('payments', 'PaymentController')->only([
     'index',
     'store',
