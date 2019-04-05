@@ -2,7 +2,7 @@
 @extends('layouts.app')
 @section('title', 'Pagos')
 @section('content')
-  <div class="row">
+  <div class="row my-2">
     <div class="col">
       @include('payments/create')
     </div>

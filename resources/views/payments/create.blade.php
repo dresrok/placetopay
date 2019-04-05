@@ -51,10 +51,13 @@
         required: true
       },
       description: {
-        required: true
+        required: true,
+        maxlength: 128
       },
       total: {
-        required: true
+        required: true,
+        number: true,
+        rangelength: [0, 12]
       }
     },
     submitHandler: function(form, e) {
