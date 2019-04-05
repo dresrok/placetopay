@@ -49,4 +49,27 @@ class PaymentControllerTest extends TestCase
             'total' => $total
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_payment_is_not_found()
+    {
+        $response = $this->get('/payments/-1');
+        $response->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_payment()
+    {
+        // Given
+        $payment = $this->createPayment('Payment');
+        // When
+        $response = $this->get("/payments/$payment->id");
+        // Then
+        $response->assertStatus(200)
+        ->assertViewHas('payment', $payment);
+    }
 }
