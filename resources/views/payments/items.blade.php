@@ -19,7 +19,9 @@
           <td>{{$payment->description}}</td>
           <td>{{$payment->currency}}</td>
           <td>{{$payment->total}}</td>
-          <td></td>
+          <td>
+            <a href="{{ route('payments.show', ['id' => $payment->id]) }}" class="btn btn-info btn-sm" role="button" aria-pressed="true">Ver</a>
+          </td>
         </tr>
       @empty
         <tr class="empty">

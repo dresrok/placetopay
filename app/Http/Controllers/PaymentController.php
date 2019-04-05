@@ -61,9 +61,10 @@ class PaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
-        //
+        $payment = Payment::with('buyer', 'expirationDates')->findorFail($id);
+        return view('payments.show', compact('payment'));
     }
 
     /**

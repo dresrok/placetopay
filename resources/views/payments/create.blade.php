@@ -70,10 +70,12 @@
             <td>${response.description}</td>
             <td>${response.currency}</td>
             <td>${response.total}</td>
-            <td></td>
+            <td>
+              <a href="{{ route('payments.show', ['id' => ':id']) }}" class="btn btn-info btn-sm" role="button" aria-pressed="true">Ver</a>
+            </td>
           </tr>
         `;
-
+        tr = tr.replace(/:id/g, response.id);
         if ($('#references-table tbody tr:first-child').hasClass('empty')) {
           $('#references-table tbody tr').remove('.empty');
         }

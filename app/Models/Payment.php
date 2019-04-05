@@ -16,7 +16,7 @@ class Payment extends Model
         return Str::random($length);
     }
 
-    public function expirationsDates() : HasMany
+    public function expirationDates() : HasMany
     {
         return $this->hasMany(ExpirationDate::class, 'payment_id', 'id');
     }
@@ -24,5 +24,10 @@ class Payment extends Model
     public function details() : HasMany
     {
         return $this->hasMany(PaymentDetail::class, 'payment_id', 'id');
+    }
+
+    public function buyer() : BelongsTo
+    {
+        return $this->belongsTo(Buyer::class, 'buyer_id');
     }
 }
