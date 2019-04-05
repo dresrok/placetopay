@@ -1,6 +1,6 @@
 <!-- Stored in resources/views/payments/create.blade.php -->
 <h4>Crear Referencia de Pago</h4>
-<form id="create_reference_form" method="POST" action="/payments">
+<form id="create_payment_form" method="POST" action="{{ route('payments.store') }}">
   @csrf
   <input type="hidden" name="currency" id="currency" value="COP">
   <input type="hidden" name="allow_partial" id="allow_partial" value="0">
@@ -45,7 +45,7 @@
 <hr>
 @section('scripts')
 <script>
-  $("#create_reference_form").validate({
+  $("#create_payment_form").validate({
     rules:{
       reference: {
         required: true

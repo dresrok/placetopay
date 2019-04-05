@@ -4,12 +4,12 @@
 @section('content')
   <div class="row my-2">
     <div class="col">
-      @include('payments/create')
+      @include('payments.create')
     </div>
   </div>
   <div class="row">
     <div class="col">
-      @include('payments/items')
+      @include('payments.items')
     </div>
   </div>
 @endsection
