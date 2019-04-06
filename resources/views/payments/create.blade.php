@@ -43,48 +43,50 @@
   <button type="submit" class="btn btn-primary loading">Guardar</button>
 </form>
 <hr>
-@section('scripts')
+@push('scripts')
 <script>
-  $("#create_payment_form").validate({
-    rules:{
-      reference: {
-        required: true
-      },
-      description: {
-        required: true,
-        maxlength: 128
-      },
-      total: {
-        required: true,
-        number: true,
-        rangelength: [0, 12]
-      }
-    },
-    submitHandler: function(form, e) {
-      e.preventDefault();
-      _ajaxSubmit($(form), function(response) {
-        $.get('payments/generate-reference', function(data) {
-          $('#reference').val(data);
-        });
-        let tr = `
-          <tr>
-            <td>${response.id}</td>
-            <td>${response.reference}</td>
-            <td>${response.description}</td>
-            <td>${response.currency}</td>
-            <td>${response.total}</td>
-            <td>
-              <a href="{{ route('payments.show', ['id' => ':id']) }}" class="btn btn-info btn-sm" role="button" aria-pressed="true">Ver</a>
-            </td>
-          </tr>
-        `;
-        tr = tr.replace(/:id/g, response.id);
-        if ($('#references-table tbody tr:first-child').hasClass('empty')) {
-          $('#references-table tbody tr').remove('.empty');
+  $( document ).ready(function() {
+    $("#create_payment_form").validate({
+      rules:{
+        reference: {
+          required: true
+        },
+        description: {
+          required: true,
+          maxlength: 128
+        },
+        total: {
+          required: true,
+          number: true,
+          rangelength: [0, 12]
         }
-        $('#references-table tbody').append(tr);
-      });
-    }
+      },
+      submitHandler: function(form, e) {
+        e.preventDefault();
+        _ajaxSubmit($(form), function(response) {
+          $.get('payments/generate-reference', function(data) {
+            $('#reference').val(data);
+          });
+          let tr = `
+            <tr>
+              <td>${response.id}</td>
+              <td>${response.reference}</td>
+              <td>${response.description}</td>
+              <td>${response.currency}</td>
+              <td>${response.total}</td>
+              <td>
+                <a href="{{ route('payments.show', ['id' => ':id']) }}" class="btn btn-info btn-sm" role="button" aria-pressed="true">Ver</a>
+              </td>
+            </tr>
+          `;
+          tr = tr.replace(/:id/g, response.id);
+          if ($('#references-table tbody tr:first-child').hasClass('empty')) {
+            $('#references-table tbody tr').remove('.empty');
+          }
+          $('#references-table tbody').append(tr);
+        });
+      }
+    });
   });
 </script>
-@endsection
+@endpush

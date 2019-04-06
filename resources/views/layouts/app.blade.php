@@ -24,6 +24,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/localization/messages_es.min.js" crossorigin="anonymous"></script>
     <script src="{!! asset('js/utils.js') !!}"></script>
-    @yield('scripts')
+    @stack('scripts')
   </body>
 </html>
