@@ -21,3 +21,7 @@ Route::resource('payments', 'PaymentController')->only([
     'store',
     'show'
 ]);
+
+Route::resource('buyers', 'BuyerController')->only([
+    'store'
+]);

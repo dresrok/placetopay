@@ -14,4 +14,9 @@ class Buyer extends Model
     {
         return $this->hasMany(Payment::class, 'buyer_id', 'id');
     }
+
+    public function documentType() : BelongsTo
+    {
+        return $this->belongsTo(DocumentType::class, 'document_type_id');
+    }
 }
