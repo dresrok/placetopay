@@ -21,9 +21,9 @@ class Payment extends Model
         return $this->hasMany(ExpirationDate::class, 'payment_id', 'id');
     }
 
-    public function details() : HasMany
+    public function detail() : HasOne
     {
-        return $this->hasMany(PaymentDetail::class, 'payment_id', 'id');
+        return $this->hasOne(PaymentDetail::class, 'payment_id', 'id');
     }
 
     public function buyer() : BelongsTo
