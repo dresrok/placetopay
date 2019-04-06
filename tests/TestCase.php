@@ -14,4 +14,10 @@ abstract class TestCase extends BaseTestCase
         $payment = factory("App\\Models\\$model")->create($attributes);
         return $payment;
     }
+
+    public function createBuyer(string $model, array $attributes = [])
+    {
+        $buyer = factory("App\\Models\\$model")->create($attributes);
+        return $buyer;
+    }
 }

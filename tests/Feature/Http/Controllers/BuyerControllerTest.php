@@ -71,4 +71,31 @@ class BuyerControllerTest extends TestCase
             'document_type_id' => $documentTypeId
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function will_not_fail_with_a_500_if_duplicate_buyer_document()
+    {
+        $faker = Factory::create();
+        $faker->addProvider(new Person($faker));
+        $documentTypeIds = DocumentType::all()->pluck('id')->toArray();
+        // Given
+        $payment = $this->createPayment('Payment');
+        $buyer = $this->createBuyer('Buyer');
+        // When
+        $response = $this->post('/buyers', [
+            'document' => $buyer->document,
+            'name' => $faker->firstName,
+            'surname' => $faker->firstName,
+            'email' => $faker->email,
+            'street' => $faker->address,
+            'city' => $faker->city,
+            'mobile' => $mobile = $faker->phoneNumber,
+            'document_type_id' => $faker->randomElement($documentTypeIds),
+            'payment_id' => $payment->id
+        ]);
+        // Then
+        $response->assertStatus(201);
+    }
 }

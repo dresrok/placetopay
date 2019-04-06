@@ -38,16 +38,28 @@ class BuyerController extends Controller
      */
     public function store(Request $request)
     {
-        $buyer = Buyer::create([
-            'document' => $request->document,
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'email' => $request->email,
-            'street' => $request->street,
-            'city' => $request->city,
-            'mobile' => $request->mobile,
-            'document_type_id' => $request->document_type_id
-        ]);
+        $buyer = Buyer::where('document', $request->document)->first();
+        if (empty($buyer)) {
+            $buyer = Buyer::create([
+                'document' => $request->document,
+                'name' => $request->name,
+                'surname' => $request->surname,
+                'email' => $request->email,
+                'street' => $request->street,
+                'city' => $request->city,
+                'mobile' => $request->mobile,
+                'document_type_id' => $request->document_type_id
+            ]);
+        } else {
+            $buyer->name = $request->name;
+            $buyer->surname = $request->surname;
+            $buyer->email = $request->email;
+            $buyer->street = $request->street;
+            $buyer->city = $request->city;
+            $buyer->mobile = $request->mobile;
+            $buyer->document_type_id = $request->document_type_id;
+            $buyer->save();
+        }
         $payment = Payment::find($request->payment_id);
         $payment->buyer()->associate($buyer);
         $payment->save();
