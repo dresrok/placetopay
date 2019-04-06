@@ -24,7 +24,8 @@ class Buyer extends JsonResource
             'city' => $this->city,
             'mobile' => $this->mobile,
             'document_type_id' => $this->document_type_id,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'document_type' => $this->documentType
         ];
     }
 }

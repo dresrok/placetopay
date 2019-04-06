@@ -9,6 +9,10 @@ class ExpirationDate extends Model
 {
     protected $guarded = ['id'];
 
+    protected $dates = [
+        'expires_at'
+    ];
+
     public function payment() : BelongsTo
     {
         return $this->belongsTo(Payment::class, 'payment_id');

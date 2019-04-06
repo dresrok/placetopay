@@ -1,3 +1,33 @@
+$.validator.addMethod(
+    'lettersonlywithaccents',
+    function(value, element) {
+        return this.optional(element) || /^[a-z\s-a-záéíóúý]+$/i.test(value);
+    },
+    'Por favor, escribe solo letras.'
+);
+$.validator.addMethod(
+    'document',
+    function(value, element, param) {
+        let documentTypeCode = $('option:selected', param).text();
+        switch (documentTypeCode) {
+            case 'CC':
+            case 'TI':
+            case 'RC':
+                return this.optional(element) || /^\d+$/.test(value);
+            case 'NIT':
+            case 'RUT':
+                return (
+                    this.optional(element) || /^\d{10,11}-[\d]{1}$/i.test(value)
+                );
+            default:
+                return (
+                    this.optional(element) ||
+                    /^[0-9{8,10}]+(-?[a-zA-z0-9{1}])?$/.test(value)
+                );
+        }
+    },
+    'Por favor, escribe un documento válido'
+);
 /**
  * Función pública para validar un formulario
  * @param {form} $form

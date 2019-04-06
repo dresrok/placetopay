@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Payment;
+use App\Models\DocumentType;
 use App\Http\Resources\Payment as PaymentResource;
 
 class PaymentController extends Controller
@@ -63,8 +64,12 @@ class PaymentController extends Controller
      */
     public function show(int $id)
     {
-        $payment = Payment::with('buyer', 'expirationDates')->findorFail($id);
-        return view('payments.show', compact('payment'));
+        $payment = Payment::with([
+            'buyer.documentType',
+            'expirationDates'
+        ])->findorFail($id);
+        $documentTypes = DocumentType::all();
+        return view('payments.show', compact('payment', 'documentTypes'));
     }
 
     /**
