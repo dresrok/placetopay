@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class PaymentControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @test
      */

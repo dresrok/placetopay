@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Payment;
 use App\Observers\PaymentObserver;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
         Payment::observe(PaymentObserver::class);
     }
 }
