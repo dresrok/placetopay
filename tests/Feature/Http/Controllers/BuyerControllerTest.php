@@ -29,9 +29,10 @@ class BuyerControllerTest extends TestCase
         $faker->addProvider(new Person($faker));
         $documentTypeIds = DocumentType::all()->pluck('id')->toArray();
         // Given
-
+        $payment = $this->createPayment('Payment');
         // When
-        $response = $this->post('/buyers', [
+        $responsePayment = $this->get("/payments/$payment->id");
+        $responseBuyer = $this->post('/buyers', [
             'document' => $document = $faker->dni,
             'name' => $faker->firstName,
             'surname' => $faker->firstName,
@@ -39,11 +40,12 @@ class BuyerControllerTest extends TestCase
             'street' => $faker->address,
             'city' => $faker->city,
             'mobile' => $mobile = $faker->phoneNumber,
-            'document_type_id' => $documentTypeId = $faker->randomElement($documentTypeIds)
+            'document_type_id' => $documentTypeId = $faker->randomElement($documentTypeIds),
+            'payment_id' => $payment->id
         ]);
 
         // Then
-        $response->assertJsonStructure([
+        $responseBuyer->assertJsonStructure([
             'id',
             'document',
             'name',

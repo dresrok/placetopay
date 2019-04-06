@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Buyer;
+use App\Models\Payment;
 use App\Http\Resources\Buyer as BuyerResource;
 
 class BuyerController extends Controller
@@ -47,6 +48,9 @@ class BuyerController extends Controller
             'mobile' => $request->mobile,
             'document_type_id' => $request->document_type_id
         ]);
+        $payment = Payment::find($request->payment_id);
+        $payment->buyer()->associate($buyer);
+        $payment->save();
         return response()->json(new BuyerResource($buyer), 201);
     }
 
