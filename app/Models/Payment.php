@@ -26,8 +26,19 @@ class Payment extends Model
         return $this->hasOne(PaymentDetail::class, 'payment_id', 'id');
     }
 
+    public function paymentReference() : HasOne
+    {
+        return $this->hasOne(PaymentReference::class, 'payment_id', 'id');
+    }
+
     public function buyer() : BelongsTo
     {
         return $this->belongsTo(Buyer::class, 'buyer_id');
     }
+
+    public function attempts() : HasMany
+    {
+        return $this->hasMany(Attempt::class, 'payment_id', 'id');
+    }
+
 }
