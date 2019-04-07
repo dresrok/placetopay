@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Buyer;
 use App\Models\Payment;
 use App\Http\Resources\Buyer as BuyerResource;
+use App\Facades\PlaceToPay;
 
 class BuyerController extends Controller
 {
@@ -38,7 +39,9 @@ class BuyerController extends Controller
      */
     public function store(Request $request)
     {
-        $buyer = Buyer::where('document', $request->document)->first();
+        $buyer = Buyer::where('document', $request->document)
+                        ->orWhere('email', $request->email)
+                        ->first();
         if (empty($buyer)) {
             $buyer = Buyer::create([
                 'document' => $request->document,
