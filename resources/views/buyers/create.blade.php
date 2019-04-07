@@ -101,7 +101,6 @@
   function getAttempts(id) {
     var route = `{{ route('api.ptp.attempts', ['id' => 'payment_id']) }}`;
     route = route.replace(/payment_id/g, id);
-    console.log(route, id)
     $.ajax({
         url: route,
         type: 'get',
@@ -140,8 +139,12 @@
     })
         .done(function(response) {
             if (response.status === 'OK' && response.reason === 'PC') {
-              let a = `<a href="${response.process_url}" id="process_url" class="btn btn-primary hidden">Continuar</a>`
+              let a = `<a href="${response.process_url}" id="process_url" class="btn btn-primary hidden">Continuar</a>`;
               $('.payment form').append(a);
+            }
+            if (response.status === 'FAILED' && response.reason == 0) {
+              let form = `@include('payments.update', ['payment' => $payment])`;
+              $('.payment div:first-child').append(form);
             }
             getAttempts(response.payment_id);
         })

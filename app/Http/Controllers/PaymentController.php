@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
 use App\Models\Payment;
 use App\Models\DocumentType;
+use App\Models\ExpirationDate;
 use App\Models\Attempt;
 use App\Http\Resources\Payment as PaymentResource;
 use App\Facades\PlaceToPay;
@@ -76,6 +78,9 @@ class PaymentController extends Controller
             $payment->redirected = 1;
             $payment->save();
         }
+        $failAttempt = Attempt::where('status', 'FAILED')
+                        ->where('payment_id', $payment->id)
+                        ->exists();
         $okAttempt = Attempt::where('status', 'OK')
                         ->where('payment_id', $payment->id)
                         ->exists();
@@ -86,7 +91,7 @@ class PaymentController extends Controller
             PlaceToPay::postMakePaymentInfoRequest($payment);
         }
         $documentTypes = DocumentType::all();
-        return view('payments.show', compact('payment', 'documentTypes', 'okAttempt'));
+        return view('payments.show', compact('payment', 'documentTypes', 'failAttempt', 'okAttempt'));
     }
 
     /**
@@ -109,7 +114,26 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $payment = Payment::with([
+            'expirationDates',
+            'detail'
+        ])->findorFail($id);
+
+        $expirationDate = $payment->expirationDates->last();
+
+        $now = Carbon::now();
+
+        if ($now > $expirationDate->expires_at) {
+            $expirationDate->delete();
+            ExpirationDate::create([
+                'expires_at' => Carbon::now()->addHours(1),
+                'payment_id' => $payment->id
+            ]);
+        }
+
+        PlaceToPay::postMakePaymentRequest($payment);
+
+        return redirect()->route('payments.show', ['id' => $payment->id]);
     }
 
     /**

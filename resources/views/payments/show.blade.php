@@ -14,7 +14,7 @@
     </div>
   @endif
   <div class="col-6 payment">
-    <form>
+    <div>
       <input type="hidden" name="payment_id" id="payment_id" value="{{ $payment->id }}">
       <div class="form-group row">
         <label for="staticReference" class="col-sm-4 col-form-label font-weight-bold">Referencia de pago</label>
@@ -46,10 +46,16 @@
           <input type="text" readonly class="form-control-plaintext" id="staticTotal" value="{{ $payment->total }}">
         </div>
       </div>
+      @if($failAttempt && !$okAttempt)
+        @include('payments.update', ['payment' => $payment])
+      @endif
       @if($okAttempt && !$payment->redirected)
         <a href="{{ $payment->paymentReference->process_url }}" id="process_url" class="btn btn-primary hidden">Continuar</a>
       @endif
-    </form>
+      @if($okAttempt && $payment->redirected)
+        <a href="{{ $payment->paymentReference->process_url }}" id="process_url" class="btn btn-primary hidden">Ver transacción</a>
+      @endif
+    </div>
   </div>
 </div>
 <hr>
