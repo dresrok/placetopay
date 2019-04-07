@@ -1,71 +1,77 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# PlaceToPay
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+El proyecto está hecho con [Laravel](https://laravel.com/docs/5.8) 5.8 y usa [Faker](https://github.com/fzaninotto/Faker) para generar datos en las pruebas unitarias y [Guzzle](<(https://github.com/guzzle/guzzle)>) para las peticiones a su API.
 
-## About Laravel
+-   Se utilizó `TDD` para los casos de prueba de crear un pago y crear un comprador.
+-   Se utilizó un `Observer` de Laravel para crear la fecha de expiración de la transacción con una hora de duración automáticamente se registre un pago.
+-   Se creó un `ServiceProvider` llamado `PlaceToPayServiceProvider` para registar el `Facade PlaceToPay` y así llamar globalmente al `Helper PlaceToPay`, clase encargada de realizar las peticiones a su API.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Clonar proyecto
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```sh
+git clone https://github.com/paleox/placetopay.git
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Instalar dependencias
 
-## Learning Laravel
+Una vez se haya clonado el proyecto se deben instalar las dependencias de Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```sh
+cd placetopay
+composer install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost you and your team's skills by digging into our comprehensive video library.
+## Configurar .env
 
-## Laravel Sponsors
+Como prerrequisito la base de datos debe estar creada. Se debe crear un archivo llamado `.env` partiendo de la estructura del archivo `.env.example` y se deben configurar las siguientes variables con sus respectivos valores:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=placetoplay
+DB_USERNAME=root
+DB_PASSWORD=
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
+PTP_LOGIN=login
+PTP_SECRET=secretKey
+PTP_ENDPOINT=https://test.placetopay.com/redirection/
+PTP_LOCALE=es_CO
+```
 
-## Contributing
+Una vez configurado es necesario generar el `key` de la aplicación:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```sh
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+\*\*Los parámetos `PTP` son opcionales ya que cuentan con su propio archivo de configuración ubicado en `placetopay\config\placetopay.php`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Pruebas unitarias
 
-## License
+Las pruebas unitarias se encuentran en `placetopay\tests\Feature\Http\Controllers`. Para ejecutar las pruebas unitarias se usan los comandos:
 
-The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```sh
+.\vendor\bin\phpunit.bat tests\Feature\Http\Controllers\PaymentControllerTest.php
+.\vendor\bin\phpunit.bat tests\Feature\Http\Controllers\BuyerControllerTest.php
+```
+
+Si se desea ejecutar un método en especifico se usa `--filter nombre_metodo` por ejemplo:
+
+```sh
+.\vendor\bin\phpunit.bat tests\Feature\Http\Controllers\PaymentControllerTest.php --filter can_create_a_payment
+```
+
+\*\*Es importante recordar que cada vez que se ejecuten las pruebas la base de datos será reseteada por el uso del `trait RefreshDatabase`
+
+## Crear tablas y poblar base de datos
+
+```sh
+php artisan migrate --seed
+```
+
+## Ejecutar el proyecto
+
+```sh
+php artisan serve
+```
