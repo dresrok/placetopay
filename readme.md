@@ -6,6 +6,10 @@ El proyecto está hecho con [Laravel](https://laravel.com/docs/5.8) 5.8 y usa [F
 -   Se utilizó un `Observer` de Laravel para crear la fecha de expiración de la transacción con una hora de duración automáticamente se registre un pago.
 -   Se creó un `ServiceProvider` llamado `PlaceToPayServiceProvider` para registar el `Facade PlaceToPay` y así llamar globalmente al `Helper PlaceToPay`, clase encargada de realizar las peticiones a su API.
 
+# Heroku
+
+La aplicación esta desplegada a Heroku en el siguiente enlace [PlaceToPay](https://place-to-pay.herokuapp.com)
+
 ## Clonar proyecto
 
 ```sh
