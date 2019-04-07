@@ -21,6 +21,7 @@ class CreatePaymentsTable extends Migration
             $table->string('currency', 8);
             $table->double('total', 12, 2);
             $table->boolean('allow_partial')->default(0);
+            $table->boolean('redirected')->default(0);
 
             $table->bigInteger('buyer_id')->unsigned()->nullable();
 
