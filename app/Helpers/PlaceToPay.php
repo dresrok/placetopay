@@ -65,23 +65,61 @@ class PlaceToPay
 
         $params = json_decode($response->getBody()->getContents());
 
-        if ($params->status->status === 'OK' && $params->status->reason == 'PC') {
-            PaymentReference::create([
+        $attempt = $this->createAttempt($payment, $params);
+
+        $placeToPay = $this->manageResponse($payment, $attempt, $params);
+
+        return $placeToPay;
+    }
+
+    private function createAttempt($payment, $params)
+    {
+        $exists = Attempt::where('status', $params->status->status)
+                            ->where('reason', $params->status->reason)
+                            ->where('payment_id', $payment->id)
+                            ->exists();
+        if ($exists) {
+            $attempt = Attempt::where('status', $params->status->status)
+                            ->where('payment_id', $payment->id)
+                            ->first();
+        } else {
+            $attempt = Attempt::create([
+                'status' => $params->status->status,
+                'reason' => $params->status->reason,
+                'message' => $params->status->message,
+                'date' => Carbon::parse($params->status->date),
+                'payment_id' => $payment->id
+            ]);
+        }
+        return $attempt;
+    }
+
+    private function manageResponse($payment, $attempt, $params)
+    {
+        $placeToPay = new \stdClass();
+        $placeToPay->id = $attempt->id;
+        $placeToPay->status = $attempt->status;
+        $placeToPay->reason = $attempt->reason;
+        $placeToPay->message = $attempt->message;
+        $placeToPay->date = (string)$attempt->date;
+        $placeToPay->payment_id = $payment->id;
+
+        if ($params->status->status === 'OK' && $params->status->reason === 'PC') {
+
+            $paymentReference = PaymentReference::create([
                 'process_url' => $params->processUrl,
                 'request_id' => $params->requestId,
                 'payment_id' => $payment->id
             ]);
+
+            $this->postMakePaymentInfoRequest($payment);
+
+            $placeToPay->process_url = $paymentReference->process_url;
+            $placeToPay->request_id = $paymentReference->request_id;
+
         }
 
-        $attempt = Attempt::create([
-            'status' => $params->status->status,
-            'reason' => $params->status->reason,
-            'message' => $params->status->message,
-            'date' => Carbon::parse($params->status->date),
-            'payment_id' => $payment->id
-        ]);
-
-        return $params;
+        return $placeToPay;
     }
 
     private function generatePaymentRequest($payment)
@@ -109,7 +147,7 @@ class PlaceToPay
                 ],
                 'payment' => [
                     'reference' => $payment->reference,
-                    'description' => $payment->reference,
+                    'description' => $payment->description,
                     'amount' => [
                         'currency' => $payment->currency,
                         'total' => $payment->total
@@ -122,6 +160,49 @@ class PlaceToPay
                 'returnUrl' => $payment->detail->return_url
             ]
             
+        ];
+    }
+
+    public function postMakePaymentInfoRequest(Payment $payment)
+    {
+        $this->generateCredentials();
+
+        $client = new Client([
+            'base_uri' => $this->endpoint,
+            'timeout'  => 2.0,
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-type' => 'application/json'
+            ],
+            "http_errors" => false,
+        ]);
+
+        $request = $this->generatePaymentInfoRequest();
+
+        $requestId = $payment->paymentReference->request_id;
+
+        $response = $client->request('POST', "api/session/$requestId", $request);
+
+        $params = json_decode($response->getBody()->getContents());
+
+        $attempt = $this->createAttempt($payment, $params);
+
+        $placeToPay = $this->manageResponse($payment, $attempt, $params);
+
+        return $placeToPay;
+    }
+
+    private function generatePaymentInfoRequest()
+    {
+        return [
+            'form_params' => [
+                'auth' => [
+                    'login' => $this->login,
+                    'seed' => $this->seed,
+                    'nonce' => $this->nonceBase64,
+                    'tranKey' => $this->tranKey
+                ]
+            ]
         ];
     }
 }
