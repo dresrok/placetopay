@@ -1,7 +1,7 @@
 <!--Stored in resources/views/buyers/create.blade.php -->
 <form id="create_buyer_form" method="POST" action="{{ route('buyers.store') }}">
   @csrf
-  <input type="hidden" name="payment_id" id="currency" value="{{ $payment->id }}">
+  <input type="hidden" name="payment_id" id="payment_id" value="{{ $payment->id }}">
   <div class="form-group">
     <label for="document_type_id">Tipo documento</label>
     <select
@@ -98,6 +98,57 @@
 <hr>
 @push('scripts')
 <script>
+  function getAttempts(id) {
+    var route = `{{ route('api.ptp.attempts', ['id' => 'payment_id']) }}`;
+    route = route.replace(/payment_id/g, id);
+    console.log(route, id)
+    $.ajax({
+        url: route,
+        type: 'get',
+        dataType: 'json'
+    })
+        .done(function(response) {
+            let $table = $('#attempts-table');
+            if ($('tbody tr:first-child', $table).hasClass('empty')) {
+              $('tbody tr', $table).remove('.empty');
+            }
+            response.forEach(function(element) {
+              let tr = `
+                <tr>
+                  <td>${element.id}</td>
+                  <td>${element.status}</td>
+                  <td>${element.reason}</td>
+                  <td>${element.message}</td>
+                  <td>${element.date}</td>
+                </tr>
+              `;
+              $table.append(tr);
+            });
+        })
+        .fail(function(jqXHR, textStatus) {
+            console.error(jqXHR, textStatus);
+        });
+  }
+  function makePayment(id) {
+    $.ajax({
+        url: `{{ route('api.ptp.store') }}`,
+        type: 'post',
+        dataType: 'json',
+        data: {
+          id
+        }
+    })
+        .done(function(response) {
+            if (response.status === 'OK' && response.reason === 'PC') {
+              let a = `<a href="${response.process_url}" id="process_url" class="btn btn-primary hidden">Continuar</a>`
+              $('.payment form').append(a);
+            }
+            getAttempts(response.payment_id);
+        })
+        .fail(function(jqXHR, textStatus) {
+            console.error(jqXHR, textStatus);
+        });
+  }
   $( document ).ready(function() {
     $("#create_buyer_form").validate({
       rules:{
@@ -140,17 +191,17 @@
         _ajaxSubmit($(form), function(response) {
           let $form = $('#create_buyer_form');
           let showForm = `@include('buyers.show', ['buyer' => $payment->buyer])`;
-          console.log(response);
           let $div = $form.parent();
           $div.empty();
           $div.append(showForm);
-          $('#staticDocument').val(`${response.document_type.code} ${response.document}`)
-          $('#staticName').val(response.name)
-          $('#staticSurname').val(response.surname)
-          $('#staticEmail').val(response.email)
-          $('#staticCity').val(response.city)
-          $('#staticStreet').text(response.street)
-          $('#staticMobile').val(response.mobile)
+          $('#staticDocument').val(`${response.document_type.code} ${response.document}`);
+          $('#staticName').val(response.name);
+          $('#staticSurname').val(response.surname);
+          $('#staticEmail').val(response.email);
+          $('#staticCity').val(response.city);
+          $('#staticStreet').text(response.street);
+          $('#staticMobile').val(response.mobile);
+          makePayment($('#payment_id').val());
         });
       }
     });

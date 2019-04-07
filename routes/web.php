@@ -16,10 +16,10 @@ Route::get('/', function () {
 });
 
 Route::get('payments/generate-reference', 'PaymentController@getReference');
+Route::get('payments/{payment}/{redirected?}', 'PaymentController@show')->name('payments.show');
 Route::resource('payments', 'PaymentController')->only([
     'index',
-    'store',
-    'show'
+    'store'
 ]);
 
 Route::resource('buyers', 'BuyerController')->only([

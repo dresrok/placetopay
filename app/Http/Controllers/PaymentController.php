@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Models\Payment;
 use App\Models\DocumentType;
+use App\Models\Attempt;
 use App\Http\Resources\Payment as PaymentResource;
+use App\Facades\PlaceToPay;
 
 class PaymentController extends Controller
 {
@@ -62,14 +64,29 @@ class PaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(int $id, int $redirected = 0)
     {
         $payment = Payment::with([
             'buyer.documentType',
-            'expirationDates'
+            'paymentReference',
+            'expirationDates',
+            'attempts'
         ])->findorFail($id);
+        if ($redirected) {
+            $payment->redirected = 1;
+            $payment->save();
+        }
+        $okAttempt = Attempt::where('status', 'OK')
+                        ->where('payment_id', $payment->id)
+                        ->exists();
+        $pendingAttempt = Attempt::where('status', 'PENDING')
+                        ->where('payment_id', $payment->id)
+                        ->exists();
+        if ($pendingAttempt) {
+            PlaceToPay::postMakePaymentInfoRequest($payment);
+        }
         $documentTypes = DocumentType::all();
-        return view('payments.show', compact('payment', 'documentTypes'));
+        return view('payments.show', compact('payment', 'documentTypes', 'okAttempt'));
     }
 
     /**

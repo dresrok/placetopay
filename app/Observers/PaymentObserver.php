@@ -22,7 +22,7 @@ class PaymentObserver
             'payment_id' => $payment->id
         ]);
         PaymentDetail::create([
-            'return_url' => url()->full() . "/{$payment->id}",
+            'return_url' => url()->full() . "/{$payment->id}/1",
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'payment_id' => $payment->id

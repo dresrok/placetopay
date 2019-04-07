@@ -8,7 +8,7 @@
         readonly
         class="form-control-plaintext"
         id="staticDocument"
-        value="{{ ($buyer) ? $buyer->documentType->document_type_code : '' }} {{ ($buyer) ? $buyer->document : '' }}"
+        value="{{ ($buyer) ? $buyer->documentType->code : '' }} {{ ($buyer) ? $buyer->document : '' }}"
       >
     </div>
   </div>

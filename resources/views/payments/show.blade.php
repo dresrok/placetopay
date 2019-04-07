@@ -5,16 +5,17 @@
 <a href="{{ route('payments.index') }}" class="btn btn-info my-2">Regresar</a>
 <div class="row">
   @if($payment->buyer)
-    <div class="col-6">
+    <div class="col-6 buyer">
       @include('buyers.show', ['buyer' => $payment->buyer])
     </div>
   @else
-    <div class="col-6">
+    <div class="col-6 buyer">
       @include('buyers.create', ['documentTypes' => $documentTypes])
     </div>
   @endif
-  <div class="col-6">
+  <div class="col-6 payment">
     <form>
+      <input type="hidden" name="payment_id" id="payment_id" value="{{ $payment->id }}">
       <div class="form-group row">
         <label for="staticReference" class="col-sm-4 col-form-label font-weight-bold">Referencia de pago</label>
         <div class="col-sm-8">
@@ -45,10 +46,18 @@
           <input type="text" readonly class="form-control-plaintext" id="staticTotal" value="{{ $payment->total }}">
         </div>
       </div>
+      @if($okAttempt && !$payment->redirected)
+        <a href="{{ $payment->paymentReference->process_url }}" id="process_url" class="btn btn-primary hidden">Continuar</a>
+      @endif
     </form>
   </div>
 </div>
 <hr>
+<div class="row">
+  <div class="col">
+    @include('attempts.index', ['attempts' => $payment->attempts])
+  </div>
+</div>
 @endsection
 @push('scripts')
 <script>
