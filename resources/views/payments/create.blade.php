@@ -58,7 +58,7 @@
         total: {
           required: true,
           number: true,
-          rangelength: [0, 12]
+          rangelength: [0, 10]
         }
       },
       submitHandler: function(form, e) {

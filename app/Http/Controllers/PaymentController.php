@@ -12,6 +12,8 @@ use App\Models\Attempt;
 use App\Http\Resources\Payment as PaymentResource;
 use App\Facades\PlaceToPay;
 
+use App\Http\Requests\StorePaymentRequest;
+
 class PaymentController extends Controller
 {
     /**
@@ -48,7 +50,7 @@ class PaymentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePaymentRequest $request)
     {
         $payment = Payment::create([
             'reference' => $request->reference,
