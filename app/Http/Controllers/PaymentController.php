@@ -131,7 +131,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        PlaceToPay::postMakePaymentRequest($payment);
+        $response = PlaceToPay::postMakePaymentRequest($payment);
 
         return redirect()->route('payments.show', ['id' => $payment->id]);
     }
